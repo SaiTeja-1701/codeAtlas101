@@ -1,112 +1,239 @@
 import { useState } from "react";
 import axios from "axios";
 
-const Home = () => {
-  const [repoInput, setRepoInput] = useState("");
-  const [loading, setLoading] = useState(false);
+function Home() {
+  // repository URL input
+  const [repoUrl, setRepoUrl] =
+    useState("");
 
-  const handleAnalyze = async () => {
-    if (!repoInput.trim()) return;
+  // repo analyzed status
+  const [repoAnalyzed,
+    setRepoAnalyzed] =
+    useState(false);
 
-    try {
-      setLoading(true);
+  // loading state
+  const [loading,
+    setLoading] =
+    useState(false);
 
-      const response = await axios.post(
-        "http://localhost:5001/analyze",
-        {
-          repo: repoInput,
-        }
-      );
+  // user question
+  const [question,
+    setQuestion] =
+    useState("");
 
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // AI answer
+  const [answer,
+    setAnswer] =
+    useState("");
+
+  // analyze repository
+  const analyzeRepository =
+    async () => {
+
+      try {
+
+        setLoading(true);
+
+        const response =
+          await axios.post(
+            "http://localhost:5001/analyze",
+            {
+              repo: repoUrl
+            }
+          );
+
+        console.log(
+          response.data
+        );
+
+        setRepoAnalyzed(
+          true
+        );
+
+        alert(
+          "Repository analyzed!"
+        );
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+        alert(
+          "Failed to analyze repo"
+        );
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
+
+  // ask repository
+  const askRepository =
+    async () => {
+
+      try {
+
+        setLoading(true);
+
+        const response =
+          await axios.post(
+            "http://localhost:5001/ask",
+            {
+              question
+            }
+          );
+
+        setAnswer(
+          response.data.answer
+        );
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+        alert(
+          "Failed asking repository"
+        );
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>
-          🧭 CodeAtlas
-        </h1>
+    <div
+      style={{
+        maxWidth: "900px",
+        margin: "40px auto",
+        padding: "20px",
+        fontFamily:
+          "Arial"
+      }}
+    >
+      <h1>
+        CodeAtlas
+      </h1>
 
-        <p style={styles.subtitle}>
-          AI-powered codebase intelligence
-        </p>
+      <p>
+        AI-Powered
+        Repository Intelligence
+      </p>
 
-        <input
-          type="text"
-          placeholder="Paste GitHub repo URL or local path"
-          value={repoInput}
-          onChange={(e) =>
-            setRepoInput(e.target.value)
-          }
-          style={styles.input}
-        />
+      {/* Repo URL */}
+      <input
+        type="text"
+        placeholder="Paste GitHub repository URL"
+        value={repoUrl}
+        onChange={(e) =>
+          setRepoUrl(
+            e.target.value
+          )
+        }
+        style={{
+          width: "100%",
+          padding: "12px",
+          marginBottom: "12px"
+        }}
+      />
 
-        <button
-          onClick={handleAnalyze}
-          style={styles.button}
-          disabled={loading}
+      {/* Analyze button */}
+      <button
+        onClick={
+          analyzeRepository
+        }
+        disabled={loading}
+        style={{
+          padding:
+            "12px 20px",
+          cursor: "pointer"
+        }}
+      >
+        {loading
+          ? "Analyzing..."
+          : "Analyze Repository"}
+      </button>
+
+      {/* Ask section */}
+      {repoAnalyzed && (
+        <div
+          style={{
+            marginTop:
+              "40px"
+          }}
         >
-          {loading
-            ? "Analyzing..."
-            : "Analyze Repository"}
-        </button>
-      </div>
+          <h2>
+            Ask Repository
+          </h2>
+
+          <input
+            type="text"
+            placeholder="How authentication works?"
+            value={
+              question
+            }
+            onChange={(e) =>
+              setQuestion(
+                e.target.value
+              )
+            }
+            style={{
+              width:
+                "100%",
+              padding:
+                "12px",
+              marginBottom:
+                "12px"
+            }}
+          />
+
+          <button
+            onClick={
+              askRepository
+            }
+            disabled={
+              loading
+            }
+            style={{
+              padding:
+                "12px 20px"
+            }}
+          >
+            Ask AI
+          </button>
+
+          {/* Answer card */}
+          {answer && (
+            <div
+              style={{
+                marginTop:
+                  "30px",
+                background:
+                  "#f5f5f5",
+                padding:
+                  "20px",
+                borderRadius:
+                  "10px",
+                whiteSpace:
+                  "pre-wrap"
+              }}
+            >
+              <h3>
+                AI Answer
+              </h3>
+
+              {answer}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    background: "#0f172a",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    color: "white",
-  },
-
-  card: {
-    width: "600px",
-    background: "#1e293b",
-    padding: "40px",
-    borderRadius: "20px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-
-  title: {
-    margin: 0,
-    fontSize: "42px",
-  },
-
-  subtitle: {
-    color: "#94a3b8",
-    marginTop: "-10px",
-  },
-
-  input: {
-    padding: "16px",
-    borderRadius: "10px",
-    border: "none",
-    fontSize: "16px",
-  },
-
-  button: {
-    padding: "16px",
-    borderRadius: "10px",
-    border: "none",
-    background: "#2563eb",
-    color: "white",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-};
+}
 
 export default Home;

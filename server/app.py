@@ -18,6 +18,10 @@ from features.qa import (
     ask_repository
 )
 
+from features.docs import (
+    generate_docs
+)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -199,9 +203,36 @@ def ask_repo():
                 str(error)
         }), 500
 
+@app.route(
+    "/generate-docs",
+    methods=["POST"]
+)
+def docs_route():
+    """
+    Generate repository docs.
+    """
+
+    try:
+
+        result = (
+            generate_docs()
+        )
+
+        return jsonify(
+            result
+        )
+
+    except Exception as error:
+
+        return jsonify({
+            "error":
+                str(error)
+        }), 500
+
 if __name__ == "__main__":
 
     app.run(
         debug=True,
+        use_reloader=False,
         port=5001
     )
