@@ -1,68 +1,91 @@
-# Architecture
-## Overview
-The system architecture is based on the Model-View-Controller (MVC) pattern, using a MERN (MongoDB, Express, React, Node) stack. The backend is built using Express, with routes defined in separate files for different functionalities. The frontend is built using React, with API calls made to the backend for data retrieval and manipulation.
+# Architecture Overview
+The architecture of this application follows the Model-View-Controller (MVC) pattern, which separates the application logic into three interconnected components. This separation allows for a more maintainable, flexible, and scalable application.
 
-## System Components
-The system consists of the following components:
-* Frontend: Built using React, responsible for rendering the user interface and handling user interactions.
-* Backend: Built using Express, responsible for handling API requests, interacting with the database, and providing data to the frontend.
-* Database: Built using MongoDB, responsible for storing and retrieving data.
-
-## System Architecture Diagram
+## High-Level Architecture
 ```mermaid
 graph TD
     Frontend[React Frontend]
-    --> Backend[Express API]
+    -->|API Calls|> Backend[Express API]
     Backend
-    --> Database[(MongoDB)]
-    Backend
-    -->|API Calls| Frontend
-    Backend
-    -->|API Calls| Mobile[Mobile App]
-    Mobile
-    -->|API Calls| Backend
+    -->|Database Interactions|> Database[(MongoDB)]
+    Mobile[Mobile App]
+    -->|API Calls|> Backend
 ```
 
 ## Backend Architecture
-The backend architecture consists of the following components:
-* Routes: Defined in separate files for different functionalities, such as user routes, activity routes, and summarize routes.
-* Models: Defined in separate files for different database models, such as user and activity models.
-* Server: Responsible for handling API requests and interacting with the database.
+The backend is built using Express.js and follows the MVC pattern. It consists of the following components:
+- **Models**: Define the structure of the data stored in the database. In this application, we have `User` and `Activity` models.
+- **Routes**: Handle incoming HTTP requests and send responses. For example, `userRoutes.js`, `activityRoutes.js`, `summarizeRoutes.js`, and `leaderboardRoutes.js`.
+- **Server**: The main entry point of the application, responsible for setting up the server and handling API calls.
 
-## Backend Architecture Diagram
 ```mermaid
 graph TD
-    Server[Express Server]
-    --> Routes[Routes]
-    Routes
-    -->|User Routes| UserRoutes[User Routes]
-    Routes
-    -->|Activity Routes| ActivityRoutes[Activity Routes]
-    Routes
-    -->|Summarize Routes| SummarizeRoutes[Summarize Routes]
+    Model[Backend Models]
+    --> Route[Backend Routes]
+    Route
+    --> Server[Backend Server]
     Server
-    -->|Database Interactions| Database[(MongoDB)]
-    Database
-    -->|User Model| User[User Model]
-    Database
-    -->|Activity Model| Activity[Activity Model]
+    --> Database
 ```
 
-## API Calls
-The frontend and mobile app make API calls to the backend to retrieve and manipulate data. The API calls are made to the following endpoints:
-* `https://b09-backend.onrender.com/api/users/complete-level`
-* `https://b09-backend.onrender.com/api/activities`
-* `https://b09-backend.onrender.com/api/activities` (mobile app)
+## Frontend and Mobile Architecture
+Both the frontend (React) and mobile app make API calls to the backend to interact with the application's data. The frontend uses API calls to interact with user and activity data, while the mobile app also makes API calls to retrieve activity data.
 
-## API Call Diagram
 ```mermaid
 graph TD
     Frontend[React Frontend]
-    -->|API Call| Backend[Express API]
+    -->|API Call|> Backend
     Mobile[Mobile App]
-    -->|API Call| Backend
-    Backend
-    -->|API Response| Frontend
-    Backend
-    -->|API Response| Mobile
+    -->|API Call|> Backend
+```
+
+## API Calls
+The application makes the following API calls:
+- **User Routes**:
+  - `POST /register`
+  - `POST /login`
+  - `POST /complete-level`
+- **Activity Routes**:
+  - `POST /`
+  - `GET /today/:name`
+  - `POST /user`
+- **Summarize Routes**:
+  - `POST /`
+  - `POST /ask-eco`
+- **Leaderboard Route**:
+  - `GET /`
+
+```mermaid
+graph TD
+    UserRoutes[User Routes]
+    -->|Register|> Backend
+    UserRoutes
+    -->|Login|> Backend
+    UserRoutes
+    -->|Complete Level|> Backend
+    ActivityRoutes[Activity Routes]
+    -->|Create Activity|> Backend
+    ActivityRoutes
+    -->|Get Today's Activity|> Backend
+    ActivityRoutes
+    -->|Create User Activity|> Backend
+    SummarizeRoutes[Summarize Routes]
+    -->|Summarize|> Backend
+    SummarizeRoutes
+    -->|Ask Eco|> Backend
+    LeaderboardRoute[Leaderboard Route]
+    -->|Get Leaderboard|> Backend
+```
+
+## Database Models
+The application uses the following database models:
+- **User**: Represents a user in the application.
+- **Activity**: Represents an activity in the application.
+
+```mermaid
+graph TD
+    User[User Model]
+    --> Database
+    Activity[Activity Model]
+    --> Database
 ```

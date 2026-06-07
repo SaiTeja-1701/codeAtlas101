@@ -20,6 +20,47 @@ function MermaidDiagram({
     setHasError] =
     useState(false);
 
+  // -------------------
+  // Fix broken AI Mermaid
+  // -------------------
+  const sanitizeMermaid = (
+    text
+  ) => {
+
+    let cleaned =
+      text;
+
+    // fix:
+    // -->|text|>
+    cleaned =
+      cleaned.replace(
+        /-->\|([^|]+)\|>/g,
+        "-->|$1|"
+      );
+
+    // remove URLs
+    cleaned =
+      cleaned.replace(
+        /https?:\/\/[^\s)\]]+/g,
+        "API"
+      );
+
+    // remove weird node labels
+    cleaned =
+      cleaned.replace(
+        /\[\(/g,
+        "["
+      );
+
+    cleaned =
+      cleaned.replace(
+        /\)\]/g,
+        "]"
+      );
+
+    return cleaned;
+  };
+
   useEffect(() => {
 
     const renderChart =
@@ -32,7 +73,9 @@ function MermaidDiagram({
           );
 
           const cleanChart =
-            chart.trim();
+            sanitizeMermaid(
+              chart.trim()
+            );
 
           const uniqueId =
             `mermaid-${Math.random()

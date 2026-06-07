@@ -1,86 +1,85 @@
-API Documentation
-================
+# API Documentation
+## Introduction
+This API documentation outlines the endpoints, methods, purposes, and flows of the API.
 
 ## Endpoints
 
-The following endpoints are available:
-
-### 1. Login
-
+### 1. User Login
 * **Endpoint:** `/api/users/login`
 * **Method:** `POST`
 * **Purpose:** Authenticate a user and return a login token.
 * **Flow:**
-	1. The client sends a `POST` request to `/api/users/login` with username and password in the request body.
-	2. The server verifies the credentials and returns a login token if successful.
+	1. The client sends a `POST` request to `/api/users/login` with the user's credentials.
+	2. The server verifies the credentials and returns a login token if they are valid.
+	3. The client stores the login token for future use.
 
-### 2. Register
-
+### 2. User Registration
 * **Endpoint:** `/api/users/register`
 * **Method:** `POST`
 * **Purpose:** Create a new user account.
 * **Flow:**
-	1. The client sends a `POST` request to `/api/users/register` with user information in the request body.
-	2. The server creates a new user account and returns a success message.
+	1. The client sends a `POST` request to `/api/users/register` with the user's registration details.
+	2. The server creates a new user account and returns a confirmation message.
+	3. The client redirects the user to the login page.
 
 ### 3. Complete Level
-
 * **Endpoint:** `/api/users/complete-level`
 * **Method:** `POST`
-* **Purpose:** Update a user's level completion status.
+* **Purpose:** Mark a level as completed for a user.
 * **Flow:**
-	1. The client sends a `POST` request to `/api/users/complete-level` with level information in the request body.
-	2. The server updates the user's level completion status and returns a success message.
+	1. The client sends a `POST` request to `/api/users/complete-level` with the level details.
+	2. The server updates the user's progress and returns a confirmation message.
+	3. The client updates the user's progress display.
 
-### 4. Activities
-
-* **Endpoint:** `/api/activities/`
+### 4. User Activities
+* **Endpoint:** `/api/user`
 * **Method:** `POST`
-* **Purpose:** Create a new activity.
+* **Purpose:** Create a new user activity.
 * **Flow:**
-	1. The client sends a `POST` request to `/api/activities/` with activity information in the request body.
-	2. The server creates a new activity and returns a success message.
+	1. The client sends a `POST` request to `/api/user` with the activity details.
+	2. The server creates a new activity for the user and returns a confirmation message.
+	3. The client updates the user's activity display.
 
 ### 5. Today's Activities
-
-* **Endpoint:** `/api/activities/today/:name`
+* **Endpoint:** `/api/user/today/:name`
 * **Method:** `GET`
 * **Purpose:** Retrieve a user's activities for the current day.
 * **Flow:**
-	1. The client sends a `GET` request to `/api/activities/today/:name` with the user's name in the URL parameter.
+	1. The client sends a `GET` request to `/api/user/today/:name` with the user's name.
 	2. The server returns the user's activities for the current day.
+	3. The client displays the activities.
 
 ### 6. Leaderboard
-
-* **Endpoint:** `/api/leaderboard/`
+* **Endpoint:** `/api/`
 * **Method:** `GET`
-* **Purpose:** Retrieve the leaderboard.
+* **Purpose:** Retrieve the leaderboard data.
 * **Flow:**
-	1. The client sends a `GET` request to `/api/leaderboard/`.
-	2. The server returns the leaderboard.
+	1. The client sends a `GET` request to `/api/`.
+	2. The server returns the leaderboard data.
+	3. The client displays the leaderboard.
 
 ### 7. Summarize
-
-* **Endpoint:** `/api/summarize/`
+* **Endpoint:** `/api/`
 * **Method:** `POST`
-* **Purpose:** Summarize user data.
+* **Purpose:** Summarize data.
 * **Flow:**
-	1. The client sends a `POST` request to `/api/summarize/` with user data in the request body.
-	2. The server summarizes the user data and returns a success message.
+	1. The client sends a `POST` request to `/api/` with the data to summarize.
+	2. The server summarizes the data and returns the result.
+	3. The client displays the summarized data.
 
 ### 8. Ask Eco
-
-* **Endpoint:** `/api/summarize/ask-eco`
+* **Endpoint:** `/api/ask-eco`
 * **Method:** `POST`
-* **Purpose:** Ask eco-related questions.
+* **Purpose:** Ask an eco-related question.
 * **Flow:**
-	1. The client sends a `POST` request to `/api/summarize/ask-eco` with the question in the request body.
-	2. The server responds with an answer to the eco-related question.
+	1. The client sends a `POST` request to `/api/ask-eco` with the question.
+	2. The server responds with an answer to the question.
+	3. The client displays the answer.
 
 ## API Call Examples
 
-* Login: `https://b09-backend.onrender.com/api/users/login`
-* Register: `https://b09-backend.onrender.com/api/users/register`
-* Complete Level: `http://localhost:5000/api/users/complete-level` (for mobile app)
+* **Login:** `https://b09-backend.onrender.com/api/users/login`
+* **Register:** `https://b09-backend.onrender.com/api/users/register`
+* **Complete Level:** `http://localhost:5000/api/users/complete-level`
 
-Note: The API call examples are for demonstration purposes only and may need to be modified based on the actual API endpoint and environment.
+Note: The API endpoints and methods are subject to change. It's recommended to check the API documentation regularly for updates.
