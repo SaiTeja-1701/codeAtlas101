@@ -32,6 +32,14 @@ from utils.repository_memory import (
     repository_state
 )
 
+from utils.git_history import (
+    get_recent_commits
+)
+
+from utils.repository_memory import (
+    repository_state
+)
+
 def parse_repository(
     repo_path,
     project_type
@@ -107,7 +115,11 @@ def analyze_repository(
             "repo_path"
         ]
     )
-
+    commits = (
+    get_recent_commits(
+        repo_path
+    )
+)
     # --------------------
     # Detect project
     # --------------------
@@ -192,6 +204,10 @@ def analyze_repository(
     repository_state[
         "analysis"
     ] = project_info
+
+    repository_state[
+        "commits"
+    ] = commits
 
     return {
         "repo_name":

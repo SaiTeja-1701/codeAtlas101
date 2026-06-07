@@ -22,6 +22,10 @@ from features.docs import (
     generate_docs
 )
 
+from features.docs import (
+    generate_docs
+)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -210,6 +214,32 @@ def ask_repo():
 def docs_route():
     """
     Generate repository docs.
+    """
+
+    try:
+
+        result = (
+            generate_docs()
+        )
+
+        return jsonify(
+            result
+        )
+
+    except Exception as error:
+
+        return jsonify({
+            "error":
+                str(error)
+        }), 500
+
+@app.route(
+    "/generate-docs",
+    methods=["POST"]
+)
+def generate_docs_route():
+    """
+    Generate AI docs.
     """
 
     try:

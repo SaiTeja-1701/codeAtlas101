@@ -1,21 +1,15 @@
-def build_docs_prompt(
+def build_document_prompt(
+    doc_type,
     repo_analysis,
-    retrieved_chunks
+    retrieved_chunks,
+    commits
 ):
     """
-    Build documentation prompt.
-
-    Goal:
-    ----------
-    Generate professional
-    markdown docs
-    grounded in repository
-    context.
+    Build document-specific prompt.
     """
 
     context = ""
 
-    # build repo context
     for chunk in (
         retrieved_chunks
     ):
@@ -35,48 +29,131 @@ def build_docs_prompt(
             f"{chunk['content']}\n"
         )
 
-    prompt = f"""
-You are a senior technical documentation engineer.
+    commit_context = ""
 
-Generate professional repository documentation.
+    for commit in commits[:10]:
 
-Repository Analysis:
+        commit_context += (
+            f"- "
+            f"{commit['message']}\n"
+        )
+
+    prompts = {
+
+        "readme": f"""
+Generate a professional README.md.
+
+Include:
+
+# Project Overview
+# Features
+# Tech Stack
+# Architecture
+# Setup
+# Usage
+# Risks
+
+Repository:
+{repo_analysis}
+
+Recent Development:
+{commit_context}
+
+Repository Context:
+{context}
+""",
+
+        "architecture": f"""
+Generate architecture.md.
+
+Include:
+
+# Architecture Overview
+# Folder Structure
+# Request Lifecycle
+# Key Modules
+# Dependencies
+
+Include Mermaid diagrams.
+
+Repository:
 {repo_analysis}
 
 Repository Context:
 {context}
+""",
 
-Generate:
+        "onboarding": f"""
+Generate onboarding.md.
 
-1. README.md
-2. architecture.md
-3. onboarding.md
+Explain:
 
-Use markdown.
+- setup
+- important files
+- project flow
+- recent development areas
+- where to start
+
+Recent Development:
+{commit_context}
+
+Repository Context:
+{context}
+""",
+
+        "api_docs": f"""
+Generate API_DOCUMENTATION.md.
+
+Include:
+- endpoint
+- method
+- purpose
+- flow
+
+Repository Context:
+{context}
+""",
+
+        "risk_analysis": f"""
+Generate RISK_ANALYSIS.md.
+
+Analyze:
+
+- architecture risks
+- maintainability
+- security concerns
+- scaling limitations
+
+Repository Context:
+{context}
+""",
+
+        "srs": f"""
+Generate a professional
+Software Requirements
+Specification.
 
 Include:
 
-- project overview
-- architecture
-- important modules
-- execution flow
-- setup instructions
-- risks
+1. Introduction
+2. Purpose
+3. Scope
+4. System Overview
+5. Functional Requirements
+6. Non Functional Requirements
+7. Architecture
+8. Risks
+9. Constraints
+10. Future Scope
 
-Also include Mermaid diagrams.
+Recent Development:
+{commit_context}
 
-Be concise but useful.
-
-Return in this format:
-
-===README===
-markdown here
-
-===ARCHITECTURE===
-markdown here
-
-===ONBOARDING===
-markdown here
+Repository Context:
+{context}
 """
+    }
 
-    return prompt
+    return prompts[
+        doc_type
+    ]

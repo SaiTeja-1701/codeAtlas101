@@ -1,24 +1,38 @@
 import os
 
-from openai import OpenAI
 from dotenv import load_dotenv
+from openai import OpenAI
 
-from prompts.docs_prompt import (
-    build_docs_prompt
+# PDF generation
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    PageBreak
 )
 
+from reportlab.lib import styles
+from reportlab.lib import colors
+
+# prompts
+from prompts.docs_prompt import (
+    build_document_prompt
+)
+
+# vector retrieval
 from utils.vector_memory import (
     vector_store
 )
 
+# repo memory
 from utils.repository_memory import (
     repository_state
 )
 
-# load env
+# load environment variables
 load_dotenv()
 
-# Groq client
+# initialize Groq client
 client = OpenAI(
     api_key=os.getenv(
         "GROQ_API_KEY"
@@ -29,79 +43,56 @@ client = OpenAI(
 )
 
 
-def save_document(
-    filename,
-    content
-):
+def create_repo_folder():
     """
-    Save markdown file.
-    """
+    Create repository-specific
+    docs folder.
 
-    output_path = (
-        os.path.join(
-            "generated_docs",
-            filename
-        )
-    )
-
-    with open(
-        output_path,
-        "w",
-        encoding="utf-8"
-    ) as file:
-
-        file.write(content)
-
-    print(
-        f"Saved: {filename}"
-    )
-
-
-def generate_docs():
-    """
-    Generate repository docs.
-
-    Flow:
-    ----------
-    get repo state
-        ↓
-    retrieve chunks
-        ↓
-    build prompt
-        ↓
-    LLM generates docs
-        ↓
-    save markdown files
+    Example:
+    generated_docs/B09/
     """
 
-    # get repo metadata
-    repo_analysis = (
+    repo_name = (
         repository_state[
-            "analysis"
+            "repo_name"
         ]
     )
 
-    # retrieve broad repo context
-    retrieved_chunks = (
-        vector_store.search(
-            query="project architecture authentication api database routes components",
-            top_k=15
-        )
+    folder_path = os.path.join(
+        "generated_docs",
+        repo_name
     )
 
-    # build prompt
-    prompt = (
-        build_docs_prompt(
-            repo_analysis,
-            retrieved_chunks
-        )
+    os.makedirs(
+        folder_path,
+        exist_ok=True
     )
 
-    print(
-        "\nGenerating docs..."
+    return folder_path
+
+
+def retrieve_context(
+    query,
+    top_k=15
+):
+    """
+    Retrieve semantic context
+    for document generation.
+    """
+
+    return vector_store.search(
+        query=query,
+        top_k=top_k
     )
 
-    # call Groq
+
+def call_llm(
+    prompt
+):
+    """
+    Call Groq model.
+    """
+
     response = (
         client.chat.completions.create(
             model=(
@@ -114,10 +105,10 @@ def generate_docs():
 
                     "content":
                         (
-                            "You are a "
+                            "You are a senior "
                             "technical "
                             "documentation "
-                            "expert."
+                            "engineer."
                         )
                 },
                 {
@@ -131,59 +122,364 @@ def generate_docs():
         )
     )
 
-    generated_text = (
+    return (
         response
         .choices[0]
         .message.content
     )
 
-    # split generated docs
-    readme = (
-        generated_text
-        .split(
-            "===ARCHITECTURE==="
-        )[0]
-        .replace(
-            "===README===",
-            ""
+
+def save_markdown(
+    folder_path,
+    filename,
+    content
+):
+    """
+    Save markdown file.
+    """
+
+    file_path = os.path.join(
+        folder_path,
+        filename
+    )
+
+    with open(
+        file_path,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        file.write(content)
+
+    print(
+        f"Saved: {filename}"
+    )
+
+
+def save_srs_pdf(
+    folder_path,
+    content
+):
+    """
+    Convert SRS markdown
+    into professional PDF.
+    """
+
+    pdf_path = os.path.join(
+        folder_path,
+        "SRS.pdf"
+    )
+
+    document = (
+        SimpleDocTemplate(
+            pdf_path
         )
     )
 
-    architecture = (
-        generated_text
-        .split(
-            "===ARCHITECTURE==="
-        )[1]
-        .split(
-            "===ONBOARDING==="
-        )[0]
+    style_sheet = (
+        styles.getSampleStyleSheet()
     )
 
-    onboarding = (
-        generated_text
-        .split(
-            "===ONBOARDING==="
-        )[1]
+    story = []
+
+    # title
+    story.append(
+        Paragraph(
+            "Software Requirements Specification",
+            style_sheet[
+                "Title"
+            ]
+        )
     )
 
-    # save markdown files
-    save_document(
-        "README.md",
-        readme
+    story.append(
+        Spacer(1, 20)
     )
 
-    save_document(
-        "architecture.md",
-        architecture
+    story.append(
+        Paragraph(
+            (
+                "Generated by "
+                "CodeAtlas"
+            ),
+            style_sheet[
+                "Italic"
+            ]
+        )
     )
 
-    save_document(
-        "onboarding.md",
-        onboarding
+    story.append(
+        PageBreak()
     )
+
+    # split markdown
+    lines = (
+        content.split("\n")
+    )
+
+    for line in lines:
+
+        line = line.strip()
+
+        if not line:
+            continue
+
+        # headings
+        if line.startswith("#"):
+
+            clean_text = (
+                line.replace(
+                    "#",
+                    ""
+                ).strip()
+            )
+
+            story.append(
+                Paragraph(
+                    clean_text,
+                    style_sheet[
+                        "Heading2"
+                    ]
+                )
+            )
+
+        else:
+
+            story.append(
+                Paragraph(
+                    line,
+                    style_sheet[
+                        "BodyText"
+                    ]
+                )
+            )
+
+        story.append(
+            Spacer(1, 8)
+        )
+
+    document.build(
+        story
+    )
+
+    print(
+        "Saved: SRS.pdf"
+    )
+
+
+def generate_single_doc(
+    doc_type,
+    filename,
+    retrieval_query,
+    folder_path
+):
+    """
+    Generate one document.
+
+    Flow:
+    ----------
+    retrieve context
+        ↓
+    build prompt
+        ↓
+    call LLM
+        ↓
+    save markdown
+    """
+
+    retrieved_chunks = (
+        retrieve_context(
+            retrieval_query
+        )
+    )
+
+    prompt = (
+        build_document_prompt(
+            doc_type=
+                doc_type,
+
+            repo_analysis=
+                repository_state[
+                    "analysis"
+                ],
+
+            retrieved_chunks=
+                retrieved_chunks,
+
+            commits=
+                repository_state[
+                    "commits"
+                ]
+        )
+    )
+
+    print(
+        f"\nGenerating "
+        f"{filename}..."
+    )
+
+    content = (
+        call_llm(
+            prompt
+        )
+    )
+
+    # special handling
+    # for SRS PDF
+    if doc_type == "srs":
+
+        save_srs_pdf(
+            folder_path,
+            content
+        )
+
+    else:
+
+        save_markdown(
+            folder_path,
+            filename,
+            content
+        )
+
+
+def generate_docs():
+    """
+    Generate all docs.
+
+    Main pipeline.
+    """
+
+    folder_path = (
+        create_repo_folder()
+    )
+
+    documents = [
+
+        {
+            "type":
+                "readme",
+
+            "filename":
+                "README.md",
+
+            "query":
+                (
+                    "project overview "
+                    "features tech stack "
+                    "architecture"
+                )
+        },
+
+        {
+            "type":
+                "architecture",
+
+            "filename":
+                "architecture.md",
+
+            "query":
+                (
+                    "routes services "
+                    "controllers database "
+                    "architecture"
+                )
+        },
+
+        {
+            "type":
+                "onboarding",
+
+            "filename":
+                "onboarding.md",
+
+            "query":
+                (
+                    "setup structure "
+                    "important files "
+                    "entry points"
+                )
+        },
+
+        {
+            "type":
+                "api_docs",
+
+            "filename":
+                (
+                    "API_DOCUMENTATION.md"
+                ),
+
+            "query":
+                (
+                    "routes api "
+                    "authentication "
+                    "endpoints"
+                )
+        },
+
+        {
+            "type":
+                "risk_analysis",
+
+            "filename":
+                (
+                    "RISK_ANALYSIS.md"
+                ),
+
+            "query":
+                (
+                    "architecture "
+                    "database auth "
+                    "middleware"
+                )
+        },
+
+        {
+            "type":
+                "srs",
+
+            "filename":
+                "SRS.pdf",
+
+            "query":
+                (
+                    "features workflows "
+                    "architecture "
+                    "requirements"
+                )
+        }
+    ]
+
+    # generate all docs
+    for document in documents:
+
+        generate_single_doc(
+            doc_type=
+                document["type"],
+
+            filename=
+                document[
+                    "filename"
+                ],
+
+            retrieval_query=
+                document[
+                    "query"
+                ],
+
+            folder_path=
+                folder_path
+        )
 
     return {
         "success": True,
+
         "message":
-            "Documentation generated"
+            (
+                "Documentation "
+                "generated"
+            ),
+
+        "folder":
+            folder_path
     }

@@ -44,6 +44,7 @@ networkx==3.6.1
 numpy==2.4.6
 openai==2.41.0
 packaging==26.2
+pillow==12.2.0
 proto-plus==1.28.0
 protobuf==5.29.6
 pyasn1==0.6.3
@@ -56,6 +57,7 @@ pyparsing==3.3.2
 python-dotenv==1.2.2
 PyYAML==6.0.3
 regex==2026.5.9
+reportlab==4.5.1
 requests==2.34.2
 rich==15.0.0
 safetensors==0.7.0
