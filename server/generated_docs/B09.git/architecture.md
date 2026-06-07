@@ -1,88 +1,87 @@
 # Architecture Overview
-The architecture of this project is based on the Model-View-Controller (MVC) pattern, using the MERN (MongoDB, Express, React, Node) stack. The project is divided into two main parts: the backend and the frontend. The backend is built using Node and Express, while the frontend is built using React.
+The proposed MERN (MongoDB, Express, React, Node) application follows the Model-View-Controller (MVC) architecture pattern. This allows for a clear separation of concerns between the application's logic, data storage, and user interface.
 
-## Overall System Architecture
+## Folder Structure
+The project is organized into the following key directories:
+```markdown
+- backend
+  - models
+  - routes
+  - utils
+- frontend
+  - src
+    - pages
+    - components
+- mobile
+  - app
+    - (tabs)
+```
+Below is a high-level representation of the folder structure using Mermaid:
 ```mermaid
-graph TD
-    A[Frontend] -->|API Calls|> B[Backend]
-    B -->|Database Queries|> C[MongoDB]
-    C -->|Data|> B
-    B -->|Data|> A
+graph LR
+    A[Project] --> B1[Backend]
+    A --> B2[Frontend]
+    A --> B3[Mobile]
+    B1 --> C1[Models]
+    B1 --> C2[Routes]
+    B1 --> C3[Utils]
+    B2 --> D1[Src]
+    D1 --> E1[Pages]
+    D1 --> E2[Components]
+    B3 --> F1[App]
+    F1 --> G1[(tabs)]
 ```
 
-# Folder Structure
-The folder structure of the project is as follows:
-- `components`: contains reusable React components
-- `pages`: contains React pages
-- `utils`: contains utility functions
-- `models`: contains MongoDB models
-- `routes`: contains Express routes
-- `server.js`: contains the Express server setup
+## Request Lifecycle
+When a user interacts with the application, the following events occur:
+1. The user's request is sent to the server.
+2. The server processes the request using the relevant route and controller.
+3. The controller interacts with the model to retrieve or update data.
+4. The model performs the necessary database operations.
+5. The controller processes the data and sends a response back to the client.
 
-## Folder Structure Diagram
+Below is a representation of the request lifecycle using Mermaid:
 ```mermaid
-graph TD
-    A[Root] --> B[components]
-    A --> C(pages]
-    A --> D[utils]
-    A --> E[models]
-    A --> F[routes]
-    A --> G[server.js]
+sequenceDiagram
+    participant Client as "Client"
+    participant Server as "Server"
+    participant Controller as "Controller"
+    participant Model as "Model"
+    participant Database as "Database"
+    Note over Client,Server: User Interaction
+    Client->>Server: Request
+    Server->>Controller: Process Request
+    Controller->>Model: Get/Update Data
+    Model->>Database: Database Operations
+    Database->>Model: Data
+    Model->>Controller: Data
+    Controller->>Server: Response
+    Server->>Client: Response
 ```
 
-# Request Lifecycle
-The request lifecycle of the project is as follows:
-1. The user makes a request to the frontend.
-2. The frontend makes an API call to the backend.
-3. The backend receives the API call and processes it.
-4. The backend makes a database query to MongoDB if necessary.
-5. The backend sends a response back to the frontend.
-6. The frontend receives the response and updates the user interface.
+## Key Modules
+The following modules are crucial to the application's functionality:
+- **User Routes**: Handles user registration, login, and level completion.
+- **Activity Routes**: Handles activity-related operations, such as creating, reading, and updating activities.
+- **Summarize Routes**: Handles summarization-related operations, such as asking eco-related questions.
+- **Leaderboard Routes**: Handles leaderboard-related operations, such as retrieving the leaderboard.
+- **User Model**: Represents a user in the database.
+- **Activity Model**: Represents an activity in the database.
 
-## Request Lifecycle Diagram
+## Dependencies
+The application relies on the following dependencies:
+- **MongoDB**: The NoSQL database used for data storage.
+- **Express**: The Node.js framework used for building the server.
+- **React**: The JavaScript library used for building the frontend.
+- **Node**: The JavaScript runtime environment used for building the server.
+- **Render**: The platform used for deploying the application.
+
+Below is a representation of the dependencies using Mermaid:
 ```mermaid
-graph TD
-    A[User] -->|Request|> B[Frontend]
-    B -->|API Call|> C[Backend]
-    C -->|Database Query|> D[MongoDB]
-    D -->|Data|> C
-    C -->|Response|> B
-    B -->|Update UI|> A
-```
-
-# Key Modules
-The key modules of the project are:
-- `userRoutes.js`: contains Express routes for user-related functionality
-- `activityRoutes.js`: contains Express routes for activity-related functionality
-- `summarizeRoutes.js`: contains Express routes for summarize-related functionality
-- `leaderboardRoutes.js`: contains Express routes for leaderboard-related functionality
-- `Activity.js`: contains the MongoDB model for activities
-- `User.js`: contains the MongoDB model for users
-
-## Key Modules Diagram
-```mermaid
-graph TD
-    A[userRoutes.js] --> B[User Routes]
-    C[activityRoutes.js] --> D[Activity Routes]
-    E[summarizeRoutes.js] --> F[Summarize Routes]
-    G[leaderboardRoutes.js] --> H[Leaderboard Routes]
-    I[Activity.js] --> J[MongoDB Model]
-    K[User.js] --> L[MongoDB Model]
-```
-
-# Dependencies
-The dependencies of the project are:
-- `express`: for building the Express server
-- `mongodb`: for interacting with the MongoDB database
-- `react`: for building the frontend
-- `node`: for running the backend
-
-## Dependencies Diagram
-```mermaid
-graph TD
-    A[Express] --> B[Backend]
-    C[MongoDB] --> B
-    D[React] --> E[Frontend]
-    E --> B
-    F[Node] --> B
+graph LR
+    A[Application] --> B1[MongoDB]
+    A --> B2[Express]
+    A --> B3[React]
+    A --> B4[Node]
+    A --> B5[Render]
 ```

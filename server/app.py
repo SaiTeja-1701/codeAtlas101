@@ -1,3 +1,4 @@
+import os
 from flask import (
     Flask,
     request,
@@ -8,6 +9,10 @@ from flask_cors import CORS
 
 from features.repository_analysis import (
     analyze_repository
+)
+
+from utils.repository_memory import (
+    repository_state
 )
 
 from utils.vector_memory import (
@@ -251,6 +256,77 @@ def generate_docs_route():
         return jsonify(
             result
         )
+
+    except Exception as error:
+
+        return jsonify({
+            "error":
+                str(error)
+        }), 500
+
+@app.route(
+    "/docs",
+    methods=["GET"]
+)
+def get_docs():
+    """
+    Return generated docs.
+    """
+
+    try:
+
+        repo_name = (
+            repository_state[
+                "repo_name"
+            ]
+        )
+
+        folder_path = os.path.join(
+            "generated_docs",
+            repo_name
+        )
+
+        docs = {}
+
+        markdown_files = [
+            "README.md",
+            "architecture.md",
+            "onboarding.md",
+            "API_DOCUMENTATION.md",
+            "RISK_ANALYSIS.md"
+        ]
+
+        for file_name in (
+            markdown_files
+        ):
+
+            file_path = (
+                os.path.join(
+                    folder_path,
+                    file_name
+                )
+            )
+
+            if os.path.exists(
+                file_path
+            ):
+
+                with open(
+                    file_path,
+                    "r",
+                    encoding="utf-8"
+                ) as file:
+
+                    docs[
+                        file_name
+                    ] = file.read()
+
+        return jsonify({
+            "success": True,
+            "docs": docs,
+            "srs_pdf":
+                "SRS.pdf"
+        })
 
     except Exception as error:
 
