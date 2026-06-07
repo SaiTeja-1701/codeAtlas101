@@ -1,111 +1,247 @@
-from flask import Flask, request, jsonify
+from flask import (
+    Flask,
+    request,
+    jsonify
+)
+
 from flask_cors import CORS
 
-# our custom utilities
-from utils.repo_loader import clone_repository
-from utils.project_detector import detect_project
+# clone repo utility
+from utils.repo_loader import (
+    clone_repository
+)
 
+# detect framework/project
+from utils.project_detector import (
+    detect_project
+)
+
+# parse python repositories
+from parser.python_parser import (
+    parse_python_repository
+)
+
+#parse mern repo
+from parser.mern_parser import (
+    parse_mern_repository
+)
 
 # initialize flask app
 app = Flask(__name__)
 
-# allow frontend (React) to talk to backend
+# allow React frontend
+# to call Flask backend
 CORS(app)
 
 
 @app.route("/health")
 def health():
     """
-    Health check endpoint.
-
-    Used to verify backend is running.
+    Simple endpoint
+    to verify backend
+    is alive.
     """
 
     return jsonify({
         "status": "running",
-        "message": "CodeAtlas backend active"
+        "message":
+            "CodeAtlas backend active"
     })
 
 
-@app.route("/analyze", methods=["POST"])
+@app.route(
+    "/analyze",
+    methods=["POST"]
+)
 def analyze_repo():
     """
-    Main endpoint for repository analysis.
+    Main repository analysis endpoint.
 
     Flow:
-    frontend sends repo URL
+    ----------
+    React frontend
         ↓
-    clone repository
+    send repo URL
         ↓
-    analyze structure
+    clone repo
+        ↓
+    detect project
+        ↓
+    parse repo
         ↓
     return metadata
     """
 
     try:
-        # get JSON body from frontend
+
+        # read frontend request body
         data = request.get_json()
 
-        # extract repo url
-        repo_url = data.get("repo")
+        # get repo URL
+        repo_url = data.get(
+            "repo"
+        )
 
-        # validation
+        # basic validation
         if not repo_url:
+
             return jsonify({
-                "error": "Repository URL required"
+                "error":
+                    "Repository URL required"
             }), 400
 
-        print("\n========== NEW REPO ==========")
-        print(repo_url)
-        print("==============================")
+        print(
+            "\n========== NEW REPO =========="
+        )
 
-        # clone repository locally
-        clone_result = clone_repository(repo_url)
+        print(repo_url)
+
+        print(
+            "=============================="
+        )
+
+        # ---------------------------------
+        # STEP 1:
+        # Clone repository
+        # ---------------------------------
+        clone_result = (
+            clone_repository(
+                repo_url
+            )
+        )
 
         """
-        clone_result looks like:
+        clone_result:
 
         {
-            "repo_name": "fastapi",
-            "repo_path": "temp_repos/fastapi"
+            "repo_name":
+                "fastapi",
+
+            "repo_path":
+                "temp_repos/fastapi"
         }
         """
 
-        # detect project type/framework
-        project_info = detect_project(
-            clone_result["repo_path"]
+        # ---------------------------------
+        # STEP 2:
+        # Detect project type
+        # ---------------------------------
+        project_info = (
+            detect_project(
+                clone_result[
+                    "repo_path"
+                ]
+            )
         )
 
-        print("\n========== ANALYSIS ==========")
-        print(project_info)
-        print("==============================\n")
+        print(
+            "\n========== PROJECT DETECTED =========="
+        )
 
-        # send response back to frontend
+        print(project_info)
+
+        print(
+            "======================================"
+        )
+
+        # ---------------------------------
+        # STEP 3:
+        # Parse python/mern repository
+        # ---------------------------------
+        parsed_data = []
+
+        if (
+            project_info[
+                "project_type"
+            ] == "python"
+        ):
+
+            print(
+                "\nParsing Python repository..."
+            )
+
+            parsed_data = (
+                parse_python_repository(
+                    clone_result[
+                        "repo_path"
+                    ]
+                )
+            )
+        elif(project_info[
+                "project_type"
+            ] == "mern"
+        ):
+            print(
+                "\nParsing MERN repository..."
+            )
+
+            parsed_data = (
+                parse_mern_repository(
+                    clone_result[
+                        "repo_path"
+                    ]
+                )
+            )
+        print(
+            "\n========== PARSING DONE =========="
+        )
+
+        print(
+            f"Parsed files: {len(parsed_data)}"
+        )
+
+        print(
+            "==================================\n"
+        )
+
+        # ---------------------------------
+        # STEP 4:
+        # Send response
+        # back to frontend
+        # ---------------------------------
         return jsonify({
+
             "success": True,
-            "message": "Repository analyzed",
+
+            "message":
+                "Repository analyzed",
 
             "repo_name":
-                clone_result["repo_name"],
+                clone_result[
+                    "repo_name"
+                ],
 
             "repo_path":
-                clone_result["repo_path"],
+                clone_result[
+                    "repo_path"
+                ],
 
             "analysis":
-                project_info
+                project_info,
+
+            # limit response
+            # to avoid huge payload
+            "parsed_files":
+                parsed_data[:20]
         })
 
-    except Exception as e:
-        print("ERROR:", str(e))
+    except Exception as error:
+
+        print(
+            "\nERROR:",
+            str(error)
+        )
 
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error":
+                str(error)
         }), 500
 
 
-# run flask server
+# run flask app
 if __name__ == "__main__":
+
     app.run(
         debug=True,
         port=5001
