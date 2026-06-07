@@ -27,6 +27,11 @@ from utils.vector_memory import (
     vector_store
 )
 
+#repo memory
+from utils.repository_memory import (
+    repository_state
+)
+
 def parse_repository(
     repo_path,
     project_type
@@ -172,6 +177,21 @@ def analyze_repository(
     print(
         f"\nVector memory created"
     )
+
+    # store current repo
+    repository_state[
+        "repo_name"
+    ] = clone_result[
+        "repo_name"
+    ]
+
+    repository_state[
+        "repo_path"
+    ] = repo_path
+
+    repository_state[
+        "analysis"
+    ] = project_info
 
     return {
         "repo_name":
