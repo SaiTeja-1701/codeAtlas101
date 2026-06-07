@@ -26,6 +26,11 @@ from parser.mern_parser import (
     parse_mern_repository
 )
 
+#chunking
+from rag.chunker import (
+    create_chunks
+)
+
 # initialize flask app
 app = Flask(__name__)
 
@@ -193,9 +198,18 @@ def analyze_repo():
         print(
             "==================================\n"
         )
+        chunks = create_chunks(
+            parsed_files=parsed_data,
+            project_type=project_info[
+            "project_type"
+            ]
+        )
 
+        print(
+            f"Chunks created: {len(chunks)}"
+        )
         # ---------------------------------
-        # STEP 4:
+        # STEP final:
         # Send response
         # back to frontend
         # ---------------------------------
@@ -222,7 +236,10 @@ def analyze_repo():
             # limit response
             # to avoid huge payload
             "parsed_files":
-                parsed_data[:20]
+                parsed_data[:20],
+
+            "chunks":
+                chunks[:20]
         })
 
     except Exception as error:
