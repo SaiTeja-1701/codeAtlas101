@@ -1,7 +1,23 @@
-node_modules
+# Python
+server/venv/
+server/.venv/
+__pycache__/
+*.pyc
+
+# Node
+client/node_modules/
+
+# Environment
 .env
+
+# Mac
 .DS_Store
-__pycache__
+
+# Vite
+dist/
+
+# temp repos
+server/temp_repos/
+
+# logs
 *.log
-
-
