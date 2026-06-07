@@ -3,13 +3,13 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import MermaidDiagram from "../components/MermaidDiagram";
+
 import "../styles/HomePage.css";
 
 function Home() {
-  // ----------------
-  // Repository State
-  // ----------------
-  const [repoUrl, setRepoUrl] =
+  const [repoUrl,
+    setRepoUrl] =
     useState("");
 
   const [
@@ -17,28 +17,28 @@ function Home() {
     setRepoAnalyzed,
   ] = useState(false);
 
-  const [loading, setLoading] =
+  const [loading,
+    setLoading] =
     useState(false);
 
-  // ----------------
-  // QA
-  // ----------------
-  const [question, setQuestion] =
+  const [question,
+    setQuestion] =
     useState("");
 
-  const [answer, setAnswer] =
+  const [answer,
+    setAnswer] =
     useState("");
 
-  // ----------------
-  // Docs
-  // ----------------
-  const [docs, setDocs] =
+  const [docs,
+    setDocs] =
     useState({});
 
   const [
     selectedDoc,
     setSelectedDoc,
-  ] = useState("README.md");
+  ] = useState(
+    "README.md"
+  );
 
   const [
     docsGenerated,
@@ -46,7 +46,7 @@ function Home() {
   ] = useState(false);
 
   // ----------------
-  // Analyze Repo
+  // analyze repo
   // ----------------
   const analyzeRepository =
     async () => {
@@ -60,12 +60,14 @@ function Home() {
           }
         );
 
-        setRepoAnalyzed(true);
-      } catch (error) {
-        console.error(error);
-
-        alert(
-          "Failed to analyze repository"
+        setRepoAnalyzed(
+          true
+        );
+      } catch (
+        error
+      ) {
+        console.error(
+          error
         );
       } finally {
         setLoading(false);
@@ -73,7 +75,7 @@ function Home() {
     };
 
   // ----------------
-  // Ask Repository
+  // ask repo
   // ----------------
   const askRepository =
     async () => {
@@ -91,11 +93,11 @@ function Home() {
         setAnswer(
           response.data.answer
         );
-      } catch (error) {
-        console.error(error);
-
-        alert(
-          "Failed to ask repository"
+      } catch (
+        error
+      ) {
+        console.error(
+          error
         );
       } finally {
         setLoading(false);
@@ -103,7 +105,7 @@ function Home() {
     };
 
   // ----------------
-  // Generate Docs
+  // generate docs
   // ----------------
   const generateDocs =
     async () => {
@@ -123,12 +125,14 @@ function Home() {
           response.data.docs
         );
 
-        setDocsGenerated(true);
-      } catch (error) {
-        console.error(error);
-
-        alert(
-          "Failed generating docs"
+        setDocsGenerated(
+          true
+        );
+      } catch (
+        error
+      ) {
+        console.error(
+          error
         );
       } finally {
         setLoading(false);
@@ -137,7 +141,7 @@ function Home() {
 
   return (
     <div className="page-container">
-      {/* Hero */}
+
       <div className="hero-section">
         <h1 className="hero-title">
           CodeAtlas
@@ -150,7 +154,7 @@ function Home() {
         </p>
       </div>
 
-      {/* Analyze Repo */}
+      {/* Analyze */}
       <div className="card">
         <h2 className="section-title">
           Analyze Repository
@@ -159,8 +163,7 @@ function Home() {
         <div className="input-wrapper">
           <input
             className="repo-input"
-            type="text"
-            placeholder="Paste GitHub repository URL"
+            placeholder="Paste GitHub repo URL"
             value={repoUrl}
             onChange={(e) =>
               setRepoUrl(
@@ -174,7 +177,6 @@ function Home() {
             onClick={
               analyzeRepository
             }
-            disabled={loading}
           >
             Analyze
           </button>
@@ -187,7 +189,7 @@ function Home() {
         )}
       </div>
 
-      {/* Ask Repository */}
+      {/* Ask Repo */}
       {repoAnalyzed && (
         <div className="card">
           <h2 className="section-title">
@@ -197,7 +199,6 @@ function Home() {
           <div className="input-wrapper">
             <input
               className="question-input"
-              type="text"
               placeholder="How authentication works?"
               value={question}
               onChange={(e) =>
@@ -251,14 +252,14 @@ function Home() {
 
           {loading && (
             <p className="loading-text">
-              Generating
-              documentation...
+              Generating documentation...
             </p>
           )}
 
           {docsGenerated && (
             <div className="docs-layout">
-              {/* Sidebar */}
+
+              {/* sidebar */}
               <div className="docs-sidebar">
                 {Object.keys(
                   docs
@@ -282,12 +283,49 @@ function Home() {
                 ))}
               </div>
 
-              {/* Viewer */}
+              {/* viewer */}
               <div className="docs-viewer">
                 <ReactMarkdown
                   remarkPlugins={[
                     remarkGfm,
                   ]}
+
+                  components={{
+                    code({
+                      children,
+                      className,
+                    }) {
+
+                      const content =
+                        String(
+                          children
+                        );
+
+                      // detect mermaid
+                      if (
+                        className ===
+                        "language-mermaid"
+                      ) {
+                        return (
+                          <MermaidDiagram
+                            chart={
+                              content
+                            }
+                          />
+                        );
+                      }
+
+                      return (
+                        <code
+                          className={
+                            className
+                          }
+                        >
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
                 >
                   {
                     docs[

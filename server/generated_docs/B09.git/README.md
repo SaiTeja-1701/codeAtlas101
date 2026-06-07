@@ -1,62 +1,68 @@
 # Project Overview
-This project is a MERN (MongoDB, Express.js, React, Node.js) application with an MVC (Model-View-Controller) architecture. It is designed to provide a comprehensive solution for eco-friendly tasks and activities. The project includes a backend API built with Node.js and Express.js, and a frontend interface built with React.
+The B09 project is a MERN (MongoDB, Express, React, Node) stack application built using the Node framework and following the MVC (Model-View-Controller) architecture. The project consists of a backend API, a frontend web application, and a mobile application. The project aims to provide a platform for users to engage with eco-friendly tasks and activities.
 
 # Features
-* User authentication and authorization
-* Eco-task management and completion tracking
-* Activities management and tracking
-* Profile page with user information and eco-task summary
-* Eco-task page with task details and completion functionality
-* Responsive design for both web and mobile applications
+The project features the following functionalities:
+* User profile management
+* Eco-task completion and tracking
+* Activities and task management
+* API integration for backend services
+* React components for frontend and mobile applications
+* Vite and Vercel integration for development and deployment
 
 # Tech Stack
-* Frontend: React, JavaScript
-* Backend: Node.js, Express.js, MongoDB
-* Deployment: Vercel
-* Build Tool: Vite
+The project utilizes the following technologies:
+* Node.js as the backend framework
+* Express.js as the backend framework
+* MongoDB as the database management system
+* React.js as the frontend framework
+* Vite as the development server
+* Vercel as the deployment platform
+* Render as the backend deployment platform
 
 # Architecture
-The project follows an MVC architecture, with the following components:
-* **Models**: Define the structure and organization of data in the database (e.g. user, eco-task, activity)
-* **Controllers**: Handle requests and responses, and interact with models to perform business logic (e.g. user authentication, eco-task completion)
-* **Views**: Render the user interface and display data to the user (e.g. profile page, eco-task page)
-* **Routes**: Define the mapping between URLs and controllers (e.g. /api/summarize, /api/users/complete-level)
+The project follows the MVC architecture, with the following components:
+* **Models**: Define the structure and schema of the data stored in the database
+* **Controllers**: Handle API requests and interactions with the database
+* **Routes**: Define the API endpoints and mapping to controllers
+* **Components**: React components for frontend and mobile applications
+* **Utils**: Utility functions for common tasks and operations
 
 # Setup
 To set up the project, follow these steps:
-1. Clone the repository: `git clone https://github.com/HACKWAVE2025/B09.git`
-2. Install dependencies: `npm install`
-3. Start the backend server: `node backend/server.js`
-4. Start the frontend development server: `npm run dev`
-5. Build and deploy the application: `npm run build` and `npm run deploy`
+1. Clone the repository from GitHub
+2. Install the required dependencies using `npm install`
+3. Set up the database connection using MongoDB
+4. Configure the backend API using environment variables
+5. Start the development server using `npm run dev`
 
 # Usage
-To use the application, follow these steps:
-1. Open the application in a web browser or on a mobile device
-2. Navigate to the profile page to view user information and eco-task summary
-3. Navigate to the eco-task page to view task details and complete tasks
-4. Use the activities drawer to view and manage activities
+To use the project, follow these steps:
+1. Start the development server using `npm run dev`
+2. Access the frontend web application at `http://localhost:3000`
+3. Access the mobile application using a mobile device or emulator
+4. Interact with the application using the provided features and functionalities
 
 # Risks
-* **Security risks**: The application uses user authentication and authorization to protect user data, but there is still a risk of unauthorized access or data breaches.
-* **Scalability risks**: The application is designed to handle a large number of users and requests, but there is still a risk of performance issues or downtime if the application is not properly scaled.
-* **Maintenance risks**: The application requires regular maintenance and updates to ensure that it remains secure and stable, but there is still a risk of technical debt or outdated dependencies if maintenance is not prioritized.
+The project is subject to the following risks:
+* **Security risks**: Potential vulnerabilities in the backend API and database management system
+* **Performance risks**: Potential performance issues with the frontend and mobile applications
+* **Deployment risks**: Potential issues with deployment and configuration of the Vercel and Render platforms
+* **Maintenance risks**: Potential challenges with maintaining and updating the project's dependencies and technologies
 
-Important directories:
-* `components`: Contains reusable React components
-* `pages`: Contains React pages for the application
-* `utils`: Contains utility functions for the application
-* `models`: Contains database models for the application
-* `routes`: Contains route definitions for the application
-* `components`: Contains React components for the mobile application
+Important directories and files:
+* `components`: React components for frontend and mobile applications
+* `pages`: Frontend pages and routes
+* `utils`: Utility functions for common tasks and operations
+* `models`: Database schema and models
+* `routes`: API endpoints and mapping to controllers
+* `server.js`: Backend API server
+* `reset-project.js`: Script for resetting the project configuration
 
 Recent developments:
-* Updated `vercel.json` to improve deployment and routing
-* Added `vercel.json` to enable Vercel deployment
-* Merged changes from `main` branch to integrate latest features and fixes
-* Fixed Vercel routing for single-page application
-* Updated Vite configuration for improved build and development performance
-* Completed DailyQuest automatic task completion feature
-* Implemented index redirects for improved navigation
-* Deployed backend application to Render
-* Completed Activities Drawer EcoCrush task for mobile application
+* Updated `vercel.json` configuration
+* Fixed Vercel routing for SPA
+* Implemented DailyQuest automatic task completion
+* Updated index redirects
+* Deployed backend API to Render platform
+* Completed Activities Drawer EcoCrush task in mobile application

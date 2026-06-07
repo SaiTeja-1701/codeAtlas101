@@ -66,15 +66,24 @@ Repository Context:
         "architecture": f"""
 Generate architecture.md.
 
-Include:
+IMPORTANT:
 
-# Architecture Overview
-# Folder Structure
-# Request Lifecycle
-# Key Modules
-# Dependencies
+Mermaid diagrams MUST be
+syntactically valid.
 
-Include Mermaid diagrams.
+ONLY use:
+
+graph TD
+
+Example:
+
+```mermaid
+graph TD
+Frontend[React Frontend]
+--> Backend[Express API]
+
+Backend
+--> Database[(MongoDB)]
 
 Repository:
 {repo_analysis}
