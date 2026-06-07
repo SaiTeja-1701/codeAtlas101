@@ -22,6 +22,10 @@ from rag.chunker import (
     create_chunks
 )
 
+#vector_mem
+from utils.vector_memory import (
+    vector_store
+)
 
 def parse_repository(
     repo_path,
@@ -159,6 +163,14 @@ def analyze_repository(
 
     print(
         f"\nChunks created: {len(chunks)}"
+    )
+
+    vector_store.build_index(
+        chunks
+    )
+
+    print(
+        f"\nVector memory created"
     )
 
     return {

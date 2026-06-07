@@ -10,6 +10,10 @@ from features.repository_analysis import (
     analyze_repository
 )
 
+from utils.vector_memory import (
+    vector_store
+)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -137,6 +141,56 @@ def analyze_repo():
                 str(error)
         }), 500
 
+@app.route(
+    "/ask",
+    methods=["POST"]
+)
+def ask_repository():
+    """
+    Ask repository questions.
+
+    Example:
+    ----------
+    How authentication works?
+    """
+
+    try:
+
+        data = (
+            request.get_json()
+        )
+
+        question = data.get(
+            "question"
+        )
+
+        if not question:
+
+            return jsonify({
+                "error":
+                    "Question required"
+            }), 400
+
+        results = (
+            vector_store.search(
+                question
+            )
+        )
+
+        return jsonify({
+            "question":
+                question,
+
+            "results":
+                results
+        })
+
+    except Exception as error:
+
+        return jsonify({
+            "error":
+                str(error)
+        }), 500
 
 if __name__ == "__main__":
 
